@@ -1,0 +1,31 @@
+---
+- hosts: all
+  vars:
+    packages_to_install: [ 'epel-release', 'kernel', 'kernel-headers' ]
+
+  tasks:
+    - name: Update the whole system
+      yum:
+        package: '*'
+        state: latest
+      register: update_packages
+
+    - name: reboot after update
+      reboot:
+      when: update_packages.changed
+
+    - name: Wait for  system to boot up
+      wait_for:
+        port: 22
+        delay: 15
+        timeout: 100
+      when: update_packages.changed
+
+    - name: Install packages additional packages
+      yum: 
+        name: "{{packages_to_install}}"
+        state: present
+
+    - name: Enable libvirtd services TODO
+      command      
+

@@ -56,7 +56,6 @@ setup(){
 @test "vagrant_destroy_all_machines" {
     [ 0 -eq 1 ]
 }
-
 @test "vagrant_remove_all_boxes" {
     [ 0 -eq 1 ]
 }

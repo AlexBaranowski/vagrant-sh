@@ -4,9 +4,11 @@
 WORK IN PROGRESS MOST OF THE INFORMATION BELOW IS NOT TRUE YET
 ```
 
-Shell library that helps to manage vagrant machines, environment etc. It currently supports and was tested on the following provider:
- - VirtualBox
- - Libvirt 
+Shell library that helps to manage vagrant machines, environment etc. It
+currently supports and was tested on the following provider:
+
+- VirtualBox
+- Libvirt 
 
 It also adds simple wrappers to the following plugins:
 
@@ -14,8 +16,11 @@ It also adds simple wrappers to the following plugins:
 
 ## But why?
 
-When it comes to the development process, the vagrant CLI is wonderful. But during my work, I had many problems with Vagrant in CI/CD processes, especially with different provides, plugins and system versions. Maintaining a bunch of vagrant shell libraries/scripts became tedious, so I decided to make one lib to make using
-vagrant easier.
+When it comes to the development process, the vagrant CLI is wonderful. But
+during my work, I had many problems with Vagrant in CI/CD processes, especially
+with different provides, plugins and system versions. Maintaining a bunch of
+vagrant shell libraries/scripts became tedious, so I decided to make one lib to
+make using vagrant easier.
 
 ## How to contribute:
 
@@ -32,8 +37,11 @@ Add issue:
 
 Feature Requests:
 
-- Make issue with feature/function that you believe would be beneficial for this project.
+- Make issue with feature/function that you believe would be beneficial for
+  this project.
 
 
 ## QA
-QA is run on 2 virtual machines. One that installs vagrant with Virtualbox and second install vagrant with libvirt.
+
+QA is run on 2 virtual machines (we decided to use CentOS-8). One that installs
+vagrant with Virtualbox and second install vagrant with libvirt.

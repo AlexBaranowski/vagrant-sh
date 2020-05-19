@@ -1,0 +1,96 @@
+---
+- hosts: all
+  tasks:
+    - name: Install redhat-lsb-core 
+      yum: 
+        name: redhat-lsb-core
+        state: present
+
+    - name: Reread ansible_lsb fact
+      setup: 
+        filter: "ansible_lsb*"
+
+    - name: Add student user
+      user:
+        name: student
+        comment: Student User
+        uid: 1010
+        shell: /bin/bash
+        append: yes
+        groups: wheel
+        password: "{{ 'student' | password_hash('sha512') }}"
+    - name: "Ensuring that wheel is able to use sudo without password"
+      lineinfile:
+        path: /etc/sudoers
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+    - name: "Copy /vagrant/labs/* to /usr/bin/"
+      copy:
+        src: "{{item}}"
+        dest: "/usr/bin"
+        owner: "root"
+        mode: 0775
+      with_fileglob:
+        - "labs/*"
+    - name: Set root password to linux123
+      user:
+        name: root
+        password: "{{ 'linux123' | password_hash('sha512') }}"
+    
+    - name: Install additional software el7 
+      yum: 
+        state: present
+        name: ['firewalld', 'libselinux-python', 'libsemanage-python', 'chrony']
+      when: ansible_lsb.major_release|int == 7
+    
+    - name: Install additional software el8
+      yum: 
+        state: present
+        name: ['firewalld', 'python3-libsemanage', 'libsemanage', 'chrony']
+      when: ansible_lsb.major_release|int == 8
+
+    - name: install el-repo key 
+      rpm_key:
+        state: present
+        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+    - name: Install el-repo el7
+      yum: 
+        name: https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+      when: ansible_lsb.major_release|int == 7
+
+    - name: Install el-repo el8
+      yum: 
+        name: https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+      when: ansible_lsb.major_release|int == 8
+    
+    - name: set the default kernel to mainline
+      lineinfile:
+        path: /etc/default/grub
+        regex: '^DEFAULTKERNEL'
+        line: 'DEFAULTKERNEL=kernel-ml'
+
+    - name: Install kernel-ml
+      yum:
+        state: latest
+        name: kernel-ml
+        enablerepo: 'elrepo-kernel'
+      register: kernel_ml
+
+    - name: Update all packages
+      yum:
+        name: '*'
+        state: latest
+      register: update_packages
+
+    - name: reboot the machine with all defaults
+      reboot:
+      when: kernel_ml.changed or update_packages.changed
+
+    - name: Wait for  system to boot up
+      wait_for:
+        port: 22
+        delay: 15
+        timeout: 100
+      when: kernel_ml.changed or update_packages.changed
