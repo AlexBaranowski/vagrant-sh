@@ -45,3 +45,10 @@ Feature Requests:
 
 QA is run on 2 virtual machines (we decided to use CentOS-8). One that installs
 vagrant with Virtualbox and second install vagrant with libvirt.
+
+```
+vagrant up
+vagrant ssh server_libvirt -c '/vagrant/tests.bats'
+vagrant ssh server_virtualbox -c '/vagrant/tests.bats'
+```
+

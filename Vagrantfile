@@ -7,6 +7,9 @@ Vagrant.configure("2") do |config|
       ansible.playbook = "playbook-libvirt.yml"
       ansible.become = true
     end
+    server_libvirt.vm.network :private_network,
+      :type => "dhcp",
+      :libvirt__network_address => '10.20.30.0'
     server_libvirt.vm.box ="eurolinux-vagrant/centos-8"
     server_libvirt.vm.synced_folder ".", "/vagrant", type: "rsync"
     server_libvirt.vm.provider "libvirt" do |lv|
