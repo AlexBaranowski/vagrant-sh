@@ -43,12 +43,12 @@ Feature Requests:
 
 ## QA
 
-QA is run on 2 virtual machines (we decided to use CentOS-8). One that installs
-vagrant with Virtualbox and second install vagrant with libvirt.
+QA is run on 1 VirtualBox machine. I wasn't able to setup vagrant so it uses
+different virsh net just for one machine :(. There is collision between VM net and
+libvirt vagrant nested VM net.
 
 ```
 vagrant up
-vagrant ssh server_libvirt -c '/vagrant/tests.bats'
 vagrant ssh server_virtualbox -c '/vagrant/tests.bats'
 ```
 

@@ -2,7 +2,7 @@
 - hosts: all
   become: true
   vars:
-    packages_to_install: [ 'kernel', 'kernel-headers', 'rubygems', '@development', 'gcc-c++', 'libvirt', 'libvirt-devel', 'ruby-devel', 'elfutils-libelf-devel']
+    packages_to_install: [ 'kernel', 'kernel-headers', 'rubygems', '@development', 'gcc-c++', 'libvirt', 'libvirt-devel', 'ruby-devel', 'elfutils-libelf-devel', 'epel-release']
     vagrant_plugins: ['vagrant-scp']
     vagrant_rpm_url: 'https://releases.hashicorp.com/vagrant/2.2.9/vagrant_2.2.9_x86_64.rpm'
     virtualbox_rpm_url: 'https://download.virtualbox.org/virtualbox/6.1.8/VirtualBox-6.1-6.1.8_137981_el8-1.x86_64.rpm'
@@ -39,6 +39,8 @@
       yum:
         name:  "{{virtualbox_rpm_url}}"
         state: present
+      register: virtbox_installed
+
     - name: Start and enable vboxdrv
       service:
         name: vboxdrv
@@ -49,11 +51,18 @@
       command: "vagrant plugin install {{item}}"
       loop: "{{vagrant_plugins}}"
 
-    - name: reboot machine
-      reboot:
+    - name: Install bats
+      yum:
+        name:  "https://download.opensuse.org/repositories/home:/alex_baranowski/CentOS_8/noarch/bats-1.1.0-4.1.noarch.rpm"
+        state: present
 
-    - name: Wait for  system to boot up
+    - name: reboot machine if VirtualBox was installed
+      reboot:
+      when: virtbox_installed.changed
+
+    - name: Wait for  system to boot up if VirtualBox was installed
       wait_for:
         port: 22
         delay: 15
         timeout: 100
+      when: virtbox_installed.changed

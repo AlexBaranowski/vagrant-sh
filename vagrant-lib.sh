@@ -7,13 +7,10 @@
 preflight_check(){
     # This function checks if most important vars inplace
     [ -n "$PROVIDER" ] && determine_provider
-    vars_to_check=( PROVIDER BOX_NAME )
-    for i in "${vars_to_check[@]}"; do
-        [ -n "$i" ] || {
-            echo "Sorry $i must be set"     
-            exit 1
-        }
-    done
+    [ -n "$BOX_NAME" ] || {
+            echo "Sorry BOX_NAME must be set"     
+            return 1
+    }
 }
 
 determine_provider(){
@@ -33,17 +30,16 @@ vagrant_update_box(){
 }
 
 vagrant_init(){
-    # Strict mode
     set -euo pipefail
     vagrant init "$BOX_NAME"
-    
 }
 
 vagrant_init_from_template(){
-    [ -n "$TEMPLATE" ] && { 
-    echo "TEMPLATE not defined!"  && exit 1
+    [ -n "$VAGRANT_TEMPLATE" ] || { 
+        echo "TEMPLATE not defined!"
+        return 1
     }
-    vagrant init "$BOX_NAME" --template "$TEMPLATE"
+    vagrant init "$BOX_NAME" --template "$VAGRANT_TEMPLATE"
 }
 
 vagrant_up(){
@@ -79,7 +75,7 @@ vagrant_purge_libvirt_boxes(){
         echo "Libvirt provider require additonal cleaning"
         for i in $(sudo virsh vol-list --pool default | grep "VAGRANTSLASH" | awk '{print $1}'); do
         echo "Removing $i libvirt volume"
-        sudo virsh vol-delete --pool default $i
+        sudo virsh vol-delete --pool default "$i"
         done
     fi
 }
@@ -87,7 +83,7 @@ vagrant_purge_libvirt_boxes(){
 vagrant_remove_all_boxes(){
     for i in $( vagrant box list | awk '{print $1}' | sort | uniq ); do
         echo "Purging box $i"
-        vagrant box remove -f --all $i
+        vagrant box remove -f --all "$i"
     done
     vagrant_purge_libvirt_boxes
 }

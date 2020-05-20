@@ -1,0 +1,1 @@
+VAGRANT_TEMPLATE="${BATS_TEST_DIRNAME}/../templates/1cpu1gb.erb"
