@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "<%= BOX_NAME %>"
+  <% if BOX_VERSION -%>
+  config.vm.box_version = "<%= BOX_VERSION %>"
+  <% end -%>
+  <% if BOX_VERSION -%>
+  config.vm.box_version = "<%= BOX_VERSION %>"
+  <% end -%>
+
+  <% if BOX_URL -%>
+  # The url from where the 'config.vm.box' box will be fetched if it
+  # doesn't already exist on the user's system.
+  config.vm.box_url = "<%= BOX_URL %>"
+  <% else -%>
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+  <% end -%>
+
+  # Customize the amount of memory on the VM
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+    vb.cpus = 2
+  end
+  config.vm.provider "libvirt" do |vb|
+    vb.memory = "4096"
+    vb.cpus = 2
+  end
+
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+end
