@@ -8,16 +8,25 @@ setup(){
     . "${BATS_TEST_DIRNAME}/../vagrant-lib.sh"
     export TEMP_DIR=$(mktemp -d)
     pushd $TEMP_DIR
+    # This is fix for problem with exported variables
+    if hash VirtualBox 2> /dev/null; then
+        echo 'PROVIDER=virtualbox' > provider_config.sh
+    else
+        echo 'PROVIDER=libvirt' > provider_config.sh 
+    fi
+    . provider_config.sh
 }
 
 # CAUTION THIS TESTS MUST BE RUN BEFORE LOADING TEST VARS
 @test "test_preflight_check_fail" {
+    skip # FIXME REMOVE
     run preflight_check
     [ "$status" -eq 1 ]
     [ "${lines[0]}" == "Sorry BOX_NAME must be set" ]
 }
 
 @test "test_preflight_check_ok" {
+    skip # FIXME REMOVE
 # HERE TODO Vagrant::Util::TemplateRenderer::BOX_NAME like it's not defined - check in other projects
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
@@ -25,6 +34,7 @@ setup(){
 }
 
 @test "vagrant_init_without_boxname" {
+    skip # FIXME REMOVE
     run vagrant_init 
     [ $status -eq 1 ]
     [ ! -e Vagrantfile ]
@@ -32,6 +42,7 @@ setup(){
 
 
 @test "test_vagrant_init" {
+    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run vagrant_init 
     [ $status -eq 0 ]
@@ -39,6 +50,7 @@ setup(){
 }
 
 @test "test_vagrant_init_from_template_without_vars" {
+    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run vagrant_init_from_template
     [ $status -eq 1 ]
@@ -46,6 +58,7 @@ setup(){
     [ ! -e Vagrantfile ]
 }
 @test "test_vagrant_init_from_template" {
+    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     . "${BATS_TEST_DIRNAME}/test_vars_template"
     run vagrant_init_from_template
@@ -59,6 +72,40 @@ setup(){
 }
 
 @test "test_vagrant_up" {
+    skip # FIXME REMOVE
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    vagrant_up
+    [ $status -eq 0 ]
+    run vagrant global-status
+    [ $status -eq 0 ] # it doesn't matter if there is working VM it's nearly always 0
+    echo $output | grep $PROVIDER -q # We use provider to determine if there is working machine
+
+}
+
+@test "test_vagrant_destroy" {
+    skip # FIXME REMOVE
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    vagrant_up
+    [ $status -eq 0 ]
+    run vagrant global-status
+    [ $status -eq 0 ] # it doesn't matter if there is working VM it's nearly always 0
+    echo $output | grep $PROVIDER -q # use provider to determine if there is working machine
+    run vagrant_destroy 
+    echo $output | grep $PROVIDER -v 
+}
+
+@test "test_vagrant_remove_box" {
+    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -67,42 +114,114 @@ setup(){
     [ -e Vagrantfile ]
     # Actually this probably shouldn't be tested in normal way
     echo "$TEMP_DIR $PROVIDER" | tee /tmp/aaaa_log
-    run PROVIDER=virtualbox vagrant_up
+    vagrant_up
     [ $status -eq 0 ]
     run vagrant global-status
-    # TODO
-}
-
-@test "test_vagrant_destroy" {
-    [ 0 -eq 0 ]
-}
-
-@test "test_vagrant_remove_box" {
-    [ 0 -eq 0 ]
+    [ $status -eq 0 ] # it doesn't matter if there is working VM it's nearly always 0
+    echo $output | grep $PROVIDER -q # use provider to determine if there is working machine
+    run vagrant_destroy 
+    [ ! -e Vagrantfile ]
+    echo $output | grep $PROVIDER -v 
+    run vagrant box list
+    [ $status -eq 0 ]
+    line_num=$(echo $output | wc -l)
+    [ 1 -eq "$line_num" ]
+    [ "$output" != 'There are no installed boxes! Use `vagrant box add` to add some.' ]
+    
+    run vagrant_remove_box
+    [ $status -eq 0 ]
+    run vagrant box list
+    [ $status -eq 0 ]
+    line_num=$(echo $output | wc -l)
+    [ 1 -eq "$line_num" ]
+    echo $output | tee /tmp/aaaaaa.log # FIXME remove
+    [ "$output" = 'There are no installed boxes! Use `vagrant box add` to add some.' ]
 }
 
 @test "test_vagrant_run_command" {
-    [ 0 -eq 0 ]
+    skip # TODO REMOVE
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    run vagrant_up
+    [ $status -eq 0 ]
+    run vagrant_run_command 'whoami' 
+    [ $status -eq 0 ]
+    echo "$output" | tee /tmp/aaaaaa_run_user.log # FIXME remove
+    echo "$output" | grep '^vagrant'
 }
 
-@test "test_vagrant_run_as_root" {
-    [ 0 -eq 0 ]
+@test "test_vagrant_run_command_as_root" {
+    skip # TODO REMOVE
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    run vagrant_up
+    [ $status -eq 0 ]
+    run vagrant_run_command_as_root 'whoami' 
+    [ $status -eq 0 ]
+    echo "$output" | tee /tmp/aaaaaa_run_root.log # FIXME remove
+    echo "$output" | grep '^root'
 }
 
 @test "test_copy_files_from_machine" {
-    [ 0 -eq 0 ]
-}
-
-@test "vagrant_destroy_all_machines" {
-    [ 0 -eq 0 ]
+    skip # TODO REMOVE
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    run vagrant_up
+    [ $status -eq 0 ]
+    run vagrant_copy_file_from_machine /etc/os-release
+    [ $status -eq 0 ]
+    grep -i 'centos' ./os-release
 }
 
 @test "vagrant_remove_all_boxes" {
-    [ 0 -eq 0 ]
+    run vagrant_remove_all_boxes
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    box_el="eurolinux-vagrant/eurolinux-7"
+    box_cl="eurolinux-vagrant/centos-7"
+    # Add 4 boxes 3 with same name&&provider and different
+    run vagrant box add --provider "$PROVIDER" "$box_el" --box-version 7.7.1
+    run vagrant box add --provider "$PROVIDER" "$box_el" --box-version 7.7.2
+    # 7.7.3 wasn't published
+    run vagrant box add --provider "$PROVIDER" "$box_el" --box-version 7.7.4
+    # 7.7.3 has only libvirt
+    run vagrant box add --provider "$PROVIDER" "$box_cl" --box-version 7.7.4
+    run vagrant box list
+    [ $status -eq 0 ]
+    line_num=$(echo $output | wc -l)
+    [ 2 -eq "$line_num" ] # FIXME ?vagrant box list prints multiple version for same provider in one line?
+    run vagrant_remove_all_boxes
+    [ $status -eq 0 ]
+    run vagrant box list
+    line_num=$(echo $output | wc -l)
+    [ 1 -eq "$line_num" ]
+    [ "$output" = 'There are no installed boxes! Use `vagrant box add` to add some.' ]
 }
 
 @test "test_vagrant_update_box" {
-    [ 0 -eq 0 ]
+    run vagrant_remove_all_boxes
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    box_centos_8="eurolinux-vagrant/centos-8"
+    run vagrant box add --provider "$PROVIDER" "$box_centos_8" --box-version 8.1.1
+    run vagrant box list
+    line_num=$(echo $output | wc -l)
+    [ 1 -eq "$line_num" ]
+    echo $output | grep '8.1.1' -q
+    vagrant_update_box
+    line_num=$(echo $output | wc -l)
+    [ 2 -eq "$line_num" ]
+    echo $output | grep '8.1.1'  -q
 }
 
 teardown(){

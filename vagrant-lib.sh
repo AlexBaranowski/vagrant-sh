@@ -59,7 +59,7 @@ vagrant_run_command(){
     vagrant ssh -c "$*"
 }
 
-vagrant_run_as_root(){
+vagrant_run_command_as_root(){
     vagrant ssh -c "sudo $*"
 }
 
