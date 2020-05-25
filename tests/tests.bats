@@ -19,14 +19,12 @@ setup(){
 
 # CAUTION THIS TESTS MUST BE RUN BEFORE LOADING TEST VARS
 @test "test_preflight_check_fail" {
-    skip # FIXME REMOVE
     run preflight_check
     [ "$status" -eq 1 ]
     [ "${lines[0]}" == "Sorry BOX_NAME must be set" ]
 }
 
 @test "test_preflight_check_ok" {
-    skip # FIXME REMOVE
 # HERE TODO Vagrant::Util::TemplateRenderer::BOX_NAME like it's not defined - check in other projects
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
@@ -34,7 +32,6 @@ setup(){
 }
 
 @test "vagrant_init_without_boxname" {
-    skip # FIXME REMOVE
     run vagrant_init 
     [ $status -eq 1 ]
     [ ! -e Vagrantfile ]
@@ -42,7 +39,6 @@ setup(){
 
 
 @test "test_vagrant_init" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run vagrant_init 
     [ $status -eq 0 ]
@@ -50,7 +46,6 @@ setup(){
 }
 
 @test "test_vagrant_init_from_template_without_vars" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run vagrant_init_from_template
     [ $status -eq 1 ]
@@ -58,7 +53,6 @@ setup(){
     [ ! -e Vagrantfile ]
 }
 @test "test_vagrant_init_from_template" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     . "${BATS_TEST_DIRNAME}/test_vars_template"
     run vagrant_init_from_template
@@ -72,7 +66,6 @@ setup(){
 }
 
 @test "test_vagrant_up" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -88,7 +81,6 @@ setup(){
 }
 
 @test "test_vagrant_destroy" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -105,7 +97,6 @@ setup(){
 }
 
 @test "test_vagrant_remove_box" {
-    skip # FIXME REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -139,7 +130,6 @@ setup(){
 }
 
 @test "test_vagrant_run_command" {
-    skip # TODO REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -155,7 +145,6 @@ setup(){
 }
 
 @test "test_vagrant_run_command_as_root" {
-    skip # TODO REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -171,7 +160,6 @@ setup(){
 }
 
 @test "test_copy_files_from_machine" {
-    skip # TODO REMOVE
     . "${BATS_TEST_DIRNAME}/test_vars"
     run preflight_check
     [ $status -eq 0 ]
@@ -196,11 +184,13 @@ setup(){
     # 7.7.3 wasn't published
     run vagrant box add --provider "$PROVIDER" "$box_el" --box-version 7.7.4
     # 7.7.3 has only libvirt
-    run vagrant box add --provider "$PROVIDER" "$box_cl" --box-version 7.7.4
+    run vagrant box add --provider "$PROVIDER" "$box_cl" --box-version 7.7.7
     run vagrant box list
     [ $status -eq 0 ]
-    line_num=$(echo $output | wc -l)
-    [ 2 -eq "$line_num" ] # FIXME ?vagrant box list prints multiple version for same provider in one line?
+    echo $output | grep $PROVIDER | grep -q '7.7.1'
+    echo $output | grep $PROVIDER | grep -q '7.7.2'
+    echo $output | grep $PROVIDER | grep -q '7.7.4'
+    echo $output | grep $PROVIDER | grep -q '7.7.7'
     run vagrant_remove_all_boxes
     [ $status -eq 0 ]
     run vagrant box list
@@ -219,9 +209,8 @@ setup(){
     [ 1 -eq "$line_num" ]
     echo $output | grep '8.1.1' -q
     vagrant_update_box
-    line_num=$(echo $output | wc -l)
-    [ 2 -eq "$line_num" ]
-    echo $output | grep '8.1.1'  -q
+    echo $output | grep '8.1.1' -q
+    # This tests don't check if box is really updated because the version will change
 }
 
 teardown(){
