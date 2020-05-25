@@ -60,6 +60,12 @@
       reboot:
       when: virtbox_installed.changed
 
+    - name: add vagrant user to vboxusers gropu
+      user:
+        groups: [ 'vboxusers' ]
+        append: yes
+        user: vagrant
+
     - name: Wait for  system to boot up if VirtualBox was installed
       wait_for:
         port: 22

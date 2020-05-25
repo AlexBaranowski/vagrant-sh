@@ -6,7 +6,7 @@
 
 preflight_check(){
     # This function checks if most important vars inplace
-    [ -n "$PROVIDER" ] && determine_provider
+    [ -n "$PROVIDER" ] || determine_provider
     [ -n "$BOX_NAME" ] || {
             echo "Sorry BOX_NAME must be set"     
             return 1
@@ -16,10 +16,8 @@ preflight_check(){
 determine_provider(){
     # FIXME in the future more providers
     if hash VirtualBox 2> /dev/null; then
-        echo "Found VirtualBox. Set Provider to VirtualBox"
-        PROVIDER=virtualbox
+        export PROVIDER=virtualbox
     else
-        echo "Provider not found set libvirt!"
         PROVIDER=libvirt
     fi
     export PROVIDER
@@ -43,7 +41,8 @@ vagrant_init_from_template(){
 }
 
 vagrant_up(){
-    vagrant up --provider "$PROVIDER"
+    echo "vagrant up --provider='$PROVIDER'" | tee /tmp/vup_log 
+    vagrant up --provider="$PROVIDER"
 }
 
 vagrant_destroy(){

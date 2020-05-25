@@ -49,14 +49,28 @@ setup(){
     . "${BATS_TEST_DIRNAME}/test_vars"
     . "${BATS_TEST_DIRNAME}/test_vars_template"
     run vagrant_init_from_template
-    echo "aaa $BATS_TEST_DIRNAME $BOX_NAME $VAGRANT_TEMPLATE" | tee /tmp/aaaa_log
     [ $status -eq 0 ]
     [ -e Vagrantfile ]
+    # Some regex to check if it's OK
+    run grep 'config.vm.box.*=.*eurolinux-vagrant/centos-8.*' Vagrantfile
+    [ $status -eq 0 ]
+    run grep 'vb.memory.*=.*"1024"' Vagrantfile
+    [ $status -eq 0 ]
 }
 
 @test "test_vagrant_up" {
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
     # Actually this probably shouldn't be tested in normal way
-    [ 0 -eq 0 ]
+    echo "$TEMP_DIR $PROVIDER" | tee /tmp/aaaa_log
+    run PROVIDER=virtualbox vagrant_up
+    [ $status -eq 0 ]
+    run vagrant global-status
+    # TODO
 }
 
 @test "test_vagrant_destroy" {
