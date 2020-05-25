@@ -48,7 +48,7 @@ vagrant_up(){
 vagrant_destroy(){
     set -euo pipefail
     vagrant destroy -f
-    rm Vagrantfile
+    rm -f Vagrantfile
 }
 
 vagrant_remove_box(){
