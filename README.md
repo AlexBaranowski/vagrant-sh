@@ -21,17 +21,17 @@ When it comes to the development process, the vagrant CLI is lovely. But during 
 # Load library
 . vagrant-sh/vagrant-lib.sh
 
-VAGRANT_TEMPLATE="../"
+VAGRANT_TEMPLATE="./vagrant-sh/templates/1cpu2gb.erb"
 BOX_NAME="eurolinux-vagrant/centos-8"
 
 set -euo pipefail
 
 # determine provider
-prefligt_check 
+preflight_check 
 vagrant_init_from_template
 vagrant_up
-vagrant_run_command echo I love rock and roll; whoami
-vagrant_run_command_as_root echo I love roll and rock; whoami
+vagrant_run_command 'echo I love rock and roll; whoami'
+vagrant_run_command_as_root 'echo I love roll and rock; whoami'
 vagrant_copy_file_from_machine /etc/os-release 
 mv os-release vagrant-machine-os-release
 vagrant_destroy # destroy vm
