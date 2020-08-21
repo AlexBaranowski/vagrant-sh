@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # In docs you have example without .git dir. I personally prefer .git dir to
+  # by also synced.
+  config.vm.synced_folder ".", "/vagrant", type: "rsync" 
+
+  config.vm.box = "<%= box_name %>"
+  <% if box_version -%>
+  config.vm.box_version = "<%= box_version %>"
+  <% end -%>
+  <% if box_version -%>
+  config.vm.box_version = "<%= box_version %>"
+  <% end -%>
+
+  <% if box_url -%>
+  # The url from where the 'config.vm.box' box will be fetched if it
+  # doesn't already exist on the user's system.
+  config.vm.box_url = "<%= box_url %>"
+  <% else -%>
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+  <% end -%>
+
+  # Customize the amount of memory on the VM
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "8192"
+    vb.cpus = 2
+  end
+  config.vm.provider "libvirt" do |vb|
+    vb.memory = "8192"
+    vb.cpus = 2
+  end
+
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+end
