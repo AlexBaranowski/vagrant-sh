@@ -6,6 +6,11 @@ Vagrant.configure("2") do |config|
   # by also synced.
   config.vm.synced_folder ".", "/vagrant", type: "rsync" 
 
+  # Explicitly disable vbguest because we are using rsync
+  if Vagrant.has_plugin?("vagrant-vbguest")
+      config.vbguest.auto_update = false
+  end
+
   config.vm.box = "<%= box_name %>"
   <% if box_version -%>
   config.vm.box_version = "<%= box_version %>"
