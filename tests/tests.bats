@@ -140,7 +140,6 @@ setup(){
     [ $status -eq 0 ]
     run vagrant_run_command 'whoami' 
     [ $status -eq 0 ]
-    echo "$output" | tee /tmp/aaaaaa_run_user.log # FIXME remove
     echo "$output" | grep '^vagrant'
 }
 
@@ -155,7 +154,6 @@ setup(){
     [ $status -eq 0 ]
     run vagrant_run_command_as_root 'whoami' 
     [ $status -eq 0 ]
-    echo "$output" | tee /tmp/aaaaaa_run_root.log # FIXME remove
     echo "$output" | grep '^root'
 }
 
@@ -171,6 +169,20 @@ setup(){
     run vagrant_copy_file_from_machine /etc/os-release
     [ $status -eq 0 ]
     grep -i 'centos' ./os-release
+}
+
+@test "test_copy_files_to_machine" {
+    . "${BATS_TEST_DIRNAME}/test_vars"
+    run preflight_check
+    [ $status -eq 0 ]
+    run vagrant_init 
+    [ $status -eq 0 ]
+    [ -e Vagrantfile ]
+    run vagrant_up
+    [ $status -eq 0 ]
+    run vagrant_copy_to_machine /etc/os-release /etc/redhat-release
+    [ $status -eq 0 ]
+     
 }
 
 @test "vagrant_remove_all_boxes" {
