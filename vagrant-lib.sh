@@ -41,8 +41,12 @@ vagrant_init_from_template(){
 }
 
 vagrant_up(){
-    echo "vagrant up --provider='$PROVIDER'" | tee /tmp/vup_log 
     vagrant up --provider="$PROVIDER"
+}
+
+vagrant_halt(){
+    # forcefully shutdown if there is no success in 120 sec
+    timeout 120 vagrant halt || vagrant halt -f 
 }
 
 vagrant_destroy(){
