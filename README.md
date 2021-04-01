@@ -3,7 +3,7 @@
 Shell library that helps to manage vagrant machines, environment etc. It currently supports and was tested on the following providers:
 
 - VirtualBox
-- Libvirt 
+- Libvirt
 
 It also adds simple wrappers to the following plugins:
 
@@ -23,20 +23,22 @@ When it comes to the development process, the vagrant CLI is lovely. But during 
 
 VAGRANT_TEMPLATE="./vagrant-sh/templates/1cpu2gb.erb"
 BOX_NAME="eurolinux-vagrant/centos-8"
-
+# BOX_VERSION is optional
+BOX_VERSION="8.3.2"
 set -euo pipefail
 
 # determine provider
-preflight_check 
+preflight_check
 vagrant_init_from_template
 vagrant_up
 vagrant_run_command 'echo I love rock and roll; whoami'
 vagrant_run_command_as_root 'echo I love roll and rock; whoami'
-vagrant_copy_file_from_machine /etc/os-release 
+vagrant_copy_file_from_machine /etc/os-release
 mv os-release vagrant-machine-os-release
 vagrant_destroy # destroy vm
 vagrant_remove_box # remove box
 ```
+
 
 ## How to contribute:
 
@@ -61,7 +63,7 @@ vagrant_remove_box # remove box
 
 ## QA
 
-QA is currently supported only on not VirtualBox machines. 
+QA is currently supported only on not VirtualBox machines.
 
 ```
 vagrant up
@@ -70,6 +72,6 @@ vagrant ssh server_virtualbox -c '/vagrant/tests.bats'
 
 #### Some QA problems in Q&A
 
-Q: Why libvirt with libvirt is not supported? 
+Q: Why libvirt with libvirt is not supported?
 A: There is a collision between VM net and libvirt vagrant nested VM network. I
 wasn't able to configure vagrant to use different net/bridge.

@@ -8,7 +8,7 @@ preflight_check(){
     # This function checks if most important vars inplace
     [ -n "$PROVIDER" ] || determine_provider
     [ -n "$BOX_NAME" ] || {
-            echo "Sorry BOX_NAME must be set"     
+            echo "Sorry BOX_NAME must be set"
             return 1
     }
 }
@@ -33,11 +33,15 @@ vagrant_init(){
 }
 
 vagrant_init_from_template(){
-    [ -n "$VAGRANT_TEMPLATE" ] || { 
+    [ -n "$VAGRANT_TEMPLATE" ] || {
         echo "TEMPLATE not defined!"
         return 1
     }
-    vagrant init "$BOX_NAME" --template "$VAGRANT_TEMPLATE"
+    if [ -z ${BOX_VERSION+x} ]; then
+        vagrant init "$BOX_NAME" --template "$VAGRANT_TEMPLATE"
+    else
+        vagrant init "$BOX_NAME" --template "$VAGRANT_TEMPLATE" --box_version "$BOX_VERSION"
+    fi
 }
 
 vagrant_up(){
@@ -46,7 +50,7 @@ vagrant_up(){
 
 vagrant_halt(){
     # forcefully shutdown if there is no success in 120 sec
-    timeout 120 vagrant halt || vagrant halt -f 
+    timeout 120 vagrant halt || vagrant halt -f
 }
 
 vagrant_destroy(){
