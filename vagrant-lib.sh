@@ -75,6 +75,13 @@ vagrant_copy_file_from_machine(){
     vagrant scp ":$*" .
 }
 
+vagrant_purge_libvirt_domain(){
+    dir_name=$(pwd)
+    domain_name="$(basename "$dir_name")_default"
+    sudo virsh destroy --domain $domain_name || echo "domain already destroyed"
+    sudo virsh undefine --domain $domain_name || echo "domain already undefined"
+}
+
 vagrant_purge_libvirt_boxes(){
     # vagrant-libvirt won't remove boxes images from libvirt default pool, so we have to do this manualy
         # VAGRANTSLASH is string that is used to recognize from app.vagrantup.com
