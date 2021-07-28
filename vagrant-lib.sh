@@ -76,10 +76,11 @@ vagrant_copy_file_from_machine(){
 }
 
 vagrant_purge_libvirt_domain(){
+    # WARNING! If there is another (started later, for example) vagrant domain with the same name it will be destroyed!
     dir_name=$(pwd)
     domain_name="$(basename "$dir_name")_default"
-    sudo virsh destroy --domain $domain_name || echo "domain already destroyed"
-    sudo virsh undefine --domain $domain_name || echo "domain already undefined"
+    sudo virsh destroy --domain "$domain_name" || echo "domain already destroyed"
+    sudo virsh undefine --domain "$domain_name" || echo "domain already undefined"
 }
 
 vagrant_purge_libvirt_boxes(){
