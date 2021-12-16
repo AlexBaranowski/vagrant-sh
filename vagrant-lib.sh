@@ -17,6 +17,8 @@ determine_provider(){
     # FIXME in the future more providers
     if hash VirtualBox 2> /dev/null; then
         export PROVIDER=virtualbox
+    elif hash vmware 2> /dev/null; then
+        export PROVIDER=vmware_workstation
     else
         PROVIDER=libvirt
     fi
