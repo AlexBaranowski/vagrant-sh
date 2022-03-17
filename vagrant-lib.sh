@@ -65,6 +65,10 @@ vagrant_remove_box(){
     vagrant box remove -f "$BOX_NAME"
 }
 
+vagrant_remove_box_all(){
+    vagrant box remove -f --all "$BOX_NAME"
+}
+
 vagrant_run_command(){
     vagrant ssh -c "$*"
 }

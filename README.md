@@ -40,7 +40,8 @@ vagrant_run_command_as_root 'echo I love roll and rock; whoami'
 vagrant_copy_file_from_machine /etc/os-release
 mv os-release vagrant-machine-os-release
 vagrant_destroy # destroy vm
-vagrant_remove_box # remove box
+vagrant_remove_box # remove box -> fails if there are multiple versions
+vagrant_remove_box_all # remove ALL versions of the BOX_NAME
 ```
 
 ## Nested Virtualization and host-passthrough CPU
