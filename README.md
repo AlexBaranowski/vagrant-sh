@@ -45,11 +45,11 @@ vagrant_remove_box # remove box
 
 ## Nested Virtualization and host-passthrough CPU
 
-It's recommended to use host-passthrough, when using libvirt/kvm, for
-Enterprise Linux version 9 like CentOS Stream 9, Red Hat Enterprise Linux 9,
-EuroLinux 9 and others RHEL like distros. RHEL 9 raised x86-64
-microarchitecture feature levels. It might be impossible to use and upgrade
-KVM backed Vagrant box/vm without theses CPU features.
+It's recommended to use host-passthrough when using libvirt/KVM for Enterprise
+Linux version 9 like CentOS Stream 9, Red Hat Enterprise Linux 9, EuroLinux 9
+and other RHEL like distros. RHEL 9 raised x86-64 microarchitecture feature
+levels. It might be impossible to use and upgrade the KVM-backed Vagrant box/VM
+without these CPU features.
 
 You can read about it:
 
@@ -57,8 +57,9 @@ You can read about it:
 - [Phoronix Article](https://www.phoronix.com/scan.php?page=news_item&px=RHEL-9-x86-64-v2-Plans)
 
 
-For convinience there are templates with propper configuration. Simply use templates
-with `-nested.erg` suffix.
+For convenience, there are templates with propper configuration. Simply use
+templates with `-nested.erg` suffix.
+
 ```bash
 VAGRANT_TEMPLATE="./vagrant-sh/templates/1cpu2gb-rsync-nested.erb"
 ```
