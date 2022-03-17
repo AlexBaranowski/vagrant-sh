@@ -11,7 +11,11 @@ It also adds simple wrappers to the following plugins:
 
 ## But why?
 
-When it comes to the development process, the vagrant CLI is lovely. But during my work, I had many problems with Vagrant in CI/CD processes, especially with different provides, plugins and system versions. Maintaining a bunch of vagrant shell libraries/scripts became tedious, so I decided to make one lib to make using vagrant easier.
+When it comes to the development process, the vagrant CLI is lovely. But during
+my work, I had many problems with Vagrant in CI/CD processes, especially with
+different provides, plugins and system versions. Maintaining a bunch of vagrant
+shell libraries/scripts became tedious, so I decided to make one lib to make
+using vagrant easier.
 
 ## Example
 
@@ -39,6 +43,25 @@ vagrant_destroy # destroy vm
 vagrant_remove_box # remove box
 ```
 
+## Nested Virtualization and host-passthrough CPU
+
+It's recommended to use host-passthrough, when using libvirt/kvm, for
+Enterprise Linux version 9 like CentOS Stream 9, Red Hat Enterprise Linux 9,
+EuroLinux 9 and others RHEL like distros. RHEL 9 raised x86-64
+microarchitecture feature levels. It might be impossible to use and upgrade
+KVM backed Vagrant box/vm without theses CPU features.
+
+You can read about it:
+
+- [Developers Red Hat Blog Post](https://developers.redhat.com/blog/2021/01/05/building-red-hat-enterprise-linux-9-for-the-x86-64-v2-microarchitecture-level)
+- [Phoronix Article](https://www.phoronix.com/scan.php?page=news_item&px=RHEL-9-x86-64-v2-Plans)
+
+
+For convinience there are templates with propper configuration. Simply use templates
+with `-nested.erg` suffix.
+```bash
+VAGRANT_TEMPLATE="./vagrant-sh/templates/1cpu2gb-rsync-nested.erb"
+```
 
 ## How to contribute:
 
